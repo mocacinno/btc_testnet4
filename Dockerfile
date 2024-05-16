@@ -1,5 +1,26 @@
+FROM ubuntu:22.04 AS miner
+#start.sh sets proxy for apt, needed for my env
+COPY start.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start.sh
+RUN /usr/local/bin/start.sh
+RUN apt-get update \
+  && apt-get install -y \
+    build-essential \
+    libssl-dev \
+    libgmp-dev \
+    libcurl4-openssl-dev \
+    libjansson-dev \
+    automake \
+	git \
+	zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/JayDDee/cpuminer-opt /cpuminer
+WORKDIR /cpuminer
+RUN ./build.sh
+
+
 FROM ubuntu:22.04 AS builder
-#start.sh sets proxy for apt, needed for my env...
+#start.sh sets proxy for apt, needed for my env
 COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 RUN /usr/local/bin/start.sh
@@ -14,16 +35,19 @@ RUN git fetch origin pull/29775/head:pr-29775 && git checkout pr-29775
 
 #compile
 RUN ./autogen.sh
-RUN ./configure --with-incompatible-bdb CC=clang CXX=clang++
+RUN ./configure --with-incompatible-bdb --with-gui=no  CC=clang CXX=clang++
 RUN make -j "$(($(nproc) + 1))"
 WORKDIR /bitcoin/src
 RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-tx && strip qt/bitcoin-qt
 
 #multistage
 FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y libdb5.3++-dev libminiupnpc-dev libevent-dev libzmq3-dev libsqlite3-dev
+RUN apt-get update && apt-get install -y libdb5.3++-dev libminiupnpc-dev libevent-dev libzmq3-dev libsqlite3-dev \
+	libjansson-dev  libcurl4-openssl-dev
+	
 COPY --from=builder /bitcoin/src/bitcoin-util /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-cli /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-tx /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoind /usr/local/bin
 COPY --from=builder /bitcoin/src/qt/bitcoin-qt /usr/local/bin
+COPY --from=miner /cpuminer/cpuminer /usr/local/bin
