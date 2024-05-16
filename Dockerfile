@@ -38,7 +38,7 @@ RUN ./autogen.sh
 RUN ./configure --with-incompatible-bdb --with-gui=no  CC=clang CXX=clang++
 RUN make -j "$(($(nproc) + 1))"
 WORKDIR /bitcoin/src
-RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-tx && strip qt/bitcoin-qt
+RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-tx
 
 #multistage
 FROM ubuntu:22.04
@@ -49,5 +49,4 @@ COPY --from=builder /bitcoin/src/bitcoin-util /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-cli /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-tx /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoind /usr/local/bin
-COPY --from=builder /bitcoin/src/qt/bitcoin-qt /usr/local/bin
 COPY --from=miner /cpuminer/cpuminer /usr/local/bin
