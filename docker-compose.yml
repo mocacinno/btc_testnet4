@@ -1,7 +1,7 @@
 version: '3'
 services:
   bitcoind:
-    image: ghcr.io/mocacinno/btc_testnet4:main
+    image: ghcr.io/mocacinno/btc_testnet4:latest
     privileged: true
     container_name: bitcoind
     volumes:
