@@ -1,0 +1,12 @@
+version: '3'
+services:
+  bitcoind:
+    image: mocacinno/btc_testnet4:cpuminer
+    privileged: true
+    container_name: bitcoind
+    volumes:
+      - /root/project/run_btc_testnet4/data:/root/.bitcoin/
+    command: ["bitcoind", "-testnet4", "-server", "-rpcuser=demo", "-rpcpassword=demo", "-rpcallowip=127.0.0.1", "-rpcport=5000"]
+    ports:
+      - "8333:8333"
+      - "48332:48332"
