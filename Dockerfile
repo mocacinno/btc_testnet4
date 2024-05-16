@@ -35,7 +35,7 @@ RUN git fetch origin pull/29775/head:pr-29775 && git checkout pr-29775
 
 #compile
 RUN ./autogen.sh
-RUN ./configure --with-incompatible-bdb CC=clang CXX=clang++
+RUN ./configure --with-incompatible-bdb --with-gui=no  CC=clang CXX=clang++
 RUN make -j "$(($(nproc) + 1))"
 WORKDIR /bitcoin/src
 RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-tx && strip qt/bitcoin-qt
