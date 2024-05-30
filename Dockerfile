@@ -1,17 +1,17 @@
-FROM ubuntu:22.04 AS lightning
+FROM ubuntu:24.04 AS lightning
 RUN apt-get update && \
-	apt-get install -y  git build-essential python3 sqlite3 libsqlite3-dev autoconf libtool python3-dev python3-mako gettext  python3-pip jq
-RUN pip install protobuf grpcio-tools
+	apt-get install -y  git build-essential python3 sqlite3 libsqlite3-dev autoconf libtool python3-dev python3-mako gettext  python3-pip jq python3-protobuf python3-grpcio python3-full
 RUN git clone https://github.com/ElementsProject/lightning /lightning
 WORKDIR /lightning
 RUN git fetch --all --tags
 RUN git checkout tags/v24.02.2 -b v24.02.2
 RUN sed -i '1311,1313d' /lightning/lightningd/chaintopology.c
+RUN python3 -m venv ./grpc_tools
+RUN ./grpc_tools/bin/pip3 install grpcio-tools
 RUN ./configure
-#RUN apt-get install -y python3-grpc-tools
 RUN make -j "$(($(nproc) + 1))"
 
-FROM ubuntu:22.04 AS miner
+FROM ubuntu:24.04 AS miner
 #start.sh sets proxy for apt, needed for my env
 COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
@@ -30,11 +30,11 @@ RUN apt-get update \
 RUN git clone https://github.com/JayDDee/cpuminer-opt /cpuminer
 WORKDIR /cpuminer
 RUN git fetch --all --tags
-RUN git checkout tags/v24.2 -b v24.2
+RUN git checkout tags/v24.3 -b v24.3
 RUN ./build.sh
 
 
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:24.04 AS builder
 #start.sh sets proxy for apt, needed for my env
 COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
@@ -56,7 +56,7 @@ WORKDIR /bitcoin/src
 RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-tx
 
 #multistage
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y libdb5.3++-dev libminiupnpc-dev libevent-dev libzmq3-dev libsqlite3-dev \
 	libjansson-dev  libcurl4-openssl-dev python3
 	
@@ -76,4 +76,3 @@ COPY --from=lightning /lightning/lightningd/lightning_hsmd /usr/local/libexec/c-
 COPY --from=lightning /lightning/lightningd/lightning_onchaind /usr/local/libexec/c-lightning/
 COPY --from=lightning /lightning/lightningd/lightning_openingd /usr/local/libexec/c-lightning/
 COPY --from=lightning /lightning/plugins /opt/lightningd/plugins
-#COPY --from=lightning /lightning/ /usr/local/bin/lite
