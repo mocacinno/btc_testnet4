@@ -35,3 +35,19 @@ docker exec -it bitcoind /bin/bash
 #change my address by yours offcourse
 cpuminer -a sha256d -o http://127.0.0.1:5000 -O demo:demo --coinbase-addr=tb1qumlhr8tn9gsdyujy464jkk4c5r488u8kxteyx5
 ```
+
+## buy me a coffee
+
+If you want to sponsor my vps, or buy me a cup of coffee, here are my tipping addresses on multiple chains:
+BTC:bc1qmdnym8crprlgsvc9k3vwgkwa23j7gzuz2dm8lm
+LTC:ltc1qd825hr87z276jwu2yfhqxucgrtu7z6ecudmupc
+ETH:0x8F1c213FC4A1b5A8F340FA3869365e002Fa385b2
+ETC:0x21FE387C1815C71A51Ac1B69af78C946C659b2b7
+BCH:qr2a7srr4pag3c7y6tk09heqdn09vh73qq6zyqp22u
+BTG:AJuAEV4CTz9harwQQYZZoj3nzCdV76StVR
+DASH:XcHd7zn5SWyFqPFuCE7AAXHhSCZ4HMCVJY
+DGB:SibsBUBDxF4Znoi8k4TVLApCL2a3zNTNac
+DOGE:D9d37vyG4mjoUPhBCTCsyJbP1hH6zXvCu7 NMC:NGNznmVzp8ADKzoUFBZzK2qQP1Z6JTM2JJ
+VTC:vtc1qmdp2nxkysrkxnf7cy03mynq368hddhjvha4g5p
+ZEC:t1g4FFvHmZ7CCpFovnTSuBdnVekCjtC2oZw
+MATIC:0x8F1c213FC4A1b5A8F340FA3869365e002Fa385b2
