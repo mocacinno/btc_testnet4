@@ -1,6 +1,6 @@
 FROM ubuntu:24.04 AS lightning
 RUN apt-get update && \
-	apt-get install -y  git build-essential python3 sqlite3 libsqlite3-dev autoconf libtool python3-dev python3-mako gettext  python3-pip jq python3-protobuf python3-grpcio python3-full
+	apt-get install -y  git build-essential python3 sqlite3 libsqlite3-dev autoconf libtool python3-dev gettext  python3-pip jq python3-protobuf python3-grpcio python3-full
 RUN git clone https://github.com/ElementsProject/lightning /lightning
 WORKDIR /lightning
 RUN git fetch --all --tags
@@ -8,7 +8,7 @@ RUN git checkout tags/v24.02.2 -b v24.02.2
 RUN sed -i '1311,1313d' /lightning/lightningd/chaintopology.c
 RUN python3 -m venv ./grpc_tools
 ENV PATH="/lightning/grpc_tools/bin:$PATH"
-RUN pip install grpcio-tools
+RUN pip install grpcio-tools mako
 RUN ./configure && make -j "$(($(nproc) + 1))"
 
 FROM ubuntu:24.04 AS miner
