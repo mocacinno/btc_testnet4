@@ -7,9 +7,9 @@ RUN git fetch --all --tags
 RUN git checkout tags/v24.02.2 -b v24.02.2
 RUN sed -i '1311,1313d' /lightning/lightningd/chaintopology.c
 RUN python3 -m venv ./grpc_tools
-RUN ./grpc_tools/bin/pip3 install grpcio-tools
-RUN ./configure
-RUN make -j "$(($(nproc) + 1))"
+ENV PATH="/lightning/grpc_tools/bin:$PATH"
+RUN pip install grpcio-tools
+RUN ./configure && make -j "$(($(nproc) + 1))"
 
 FROM ubuntu:24.04 AS miner
 #start.sh sets proxy for apt, needed for my env
