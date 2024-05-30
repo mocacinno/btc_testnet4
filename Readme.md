@@ -1,6 +1,6 @@
 # intro
 
-This container image builds bitcoin core with pull request for testnet4, cpuminer and (c-)lightning.
+This container image builds bitcoin core with pull request for testnet4 and (c-)lightning.
 
 You can build the image yourself, or use the image built by me. 
 
@@ -30,16 +30,6 @@ docker-compose up -d
 docker exec -it bitcoind /bin/bash
 bitcoin-cli -testnet4 -rpcuser=demo -rpcpassword=demo -rpcport=5000 createwallet walletname
 bitcoin-cli -testnet4 -rpcuser=demo -rpcpassword=demo -rpcport=5000 getnewaddress
-```
-
-## How to mine
-
-The image also includes cpuminer... Eventough it's **not** a good idear to cpuminer... Somebody is already using an ASIC on the testnet4, so you'll have very little chance of solving a block cpu mining... But if you'd like to learn, here's how you'd cpu mine
-
-```bash
-docker exec -it bitcoind /bin/bash
-#change my address by yours offcourse
-cpuminer -a sha256d -o http://127.0.0.1:5000 -O demo:demo --coinbase-addr=tb1qumlhr8tn9gsdyujy464jkk4c5r488u8kxteyx5
 ```
 
 ## how to use (c-)lightning
