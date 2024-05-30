@@ -11,28 +11,6 @@ ENV PATH="/lightning/grpc_tools/bin:$PATH"
 RUN pip install grpcio-tools mako
 RUN ./configure && make -j "$(($(nproc) + 1))"
 
-FROM ubuntu:24.04 AS miner
-#start.sh sets proxy for apt, needed for my env
-COPY start.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/start.sh
-RUN /usr/local/bin/start.sh
-RUN apt-get update \
-  && apt-get install -y \
-    build-essential \
-    libssl-dev \
-    libgmp-dev \
-    libcurl4-openssl-dev \
-    libjansson-dev \
-    automake \
-	git \
-	zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/JayDDee/cpuminer-opt /cpuminer
-WORKDIR /cpuminer
-RUN git fetch --all --tags
-RUN git checkout tags/v24.3 -b v24.3
-RUN ./build.sh
-
 
 FROM ubuntu:24.04 AS builder
 #start.sh sets proxy for apt, needed for my env
@@ -64,7 +42,6 @@ COPY --from=builder /bitcoin/src/bitcoin-util /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-cli /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-tx /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoind /usr/local/bin
-COPY --from=miner /cpuminer/cpuminer /usr/local/bin
 COPY --from=lightning /lightning/cli/lightning-cli /usr/local/bin
 COPY --from=lightning /lightning/tools/reckless /usr/local/bin
 COPY --from=lightning /lightning/lightningd/lightningd /usr/local/bin
@@ -76,3 +53,11 @@ COPY --from=lightning /lightning/lightningd/lightning_hsmd /usr/local/libexec/c-
 COPY --from=lightning /lightning/lightningd/lightning_onchaind /usr/local/libexec/c-lightning/
 COPY --from=lightning /lightning/lightningd/lightning_openingd /usr/local/libexec/c-lightning/
 COPY --from=lightning /lightning/plugins /opt/lightningd/plugins
+
+
+RUN apt-get update && \
+  apt-get install -y wget curl npm
+RUN wget https://github.com/Ride-The-Lightning/RTL/archive/refs/tags/v0.15.0.tar.gz
+RUN tar -xvf v0.15.0.tar.gz
+WORKDIR RTL-0.15.0
+RUN npm install --omit=dev
