@@ -1,16 +1,3 @@
-FROM ubuntu:24.04 AS lightning
-RUN apt-get update && \
-	apt-get install -y  git build-essential python3 sqlite3 libsqlite3-dev autoconf libtool python3-dev gettext  python3-pip jq python3-protobuf python3-grpcio python3-full
-RUN git clone https://github.com/ElementsProject/lightning /lightning
-WORKDIR /lightning
-RUN git fetch --all --tags
-RUN git checkout tags/v24.02.2 -b v24.02.2
-RUN sed -i '1311,1313d' /lightning/lightningd/chaintopology.c
-RUN python3 -m venv ./grpc_tools
-ENV PATH="/lightning/grpc_tools/bin:$PATH"
-RUN pip install grpcio-tools mako
-RUN ./configure && make -j "$(($(nproc) + 1))"
-
 FROM ubuntu:24.04 AS miner
 #start.sh sets proxy for apt, needed for my env
 COPY start.sh /usr/local/bin/
@@ -24,8 +11,8 @@ RUN apt-get update \
     libcurl4-openssl-dev \
     libjansson-dev \
     automake \
-	git \
-	zlib1g-dev \
+        git \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/JayDDee/cpuminer-opt /cpuminer
 WORKDIR /cpuminer
@@ -58,21 +45,10 @@ RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-t
 #multistage
 FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y libdb5.3++-dev libminiupnpc-dev libevent-dev libzmq3-dev libsqlite3-dev \
-	libjansson-dev  libcurl4-openssl-dev python3
-	
+        libjansson-dev  libcurl4-openssl-dev python3
+
 COPY --from=builder /bitcoin/src/bitcoin-util /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-cli /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoin-tx /usr/local/bin
 COPY --from=builder /bitcoin/src/bitcoind /usr/local/bin
 COPY --from=miner /cpuminer/cpuminer /usr/local/bin
-COPY --from=lightning /lightning/cli/lightning-cli /usr/local/bin
-COPY --from=lightning /lightning/tools/reckless /usr/local/bin
-COPY --from=lightning /lightning/lightningd/lightningd /usr/local/bin
-COPY --from=lightning /lightning/lightningd/lightning_channeld /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/lightningd/lightning_closingd /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/lightningd/lightning_connectd /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/lightningd/lightning_gossipd /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/lightningd/lightning_hsmd /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/lightningd/lightning_onchaind /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/lightningd/lightning_openingd /usr/local/libexec/c-lightning/
-COPY --from=lightning /lightning/plugins /opt/lightningd/plugins
