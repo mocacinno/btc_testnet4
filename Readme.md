@@ -1,6 +1,6 @@
 # intro
 
-This container image builds bitcoin core with pull request for testnet4, cpuminer and (c-)lightning.
+This container image builds bitcoin core with pull request for testnet4 and ckpool.
 
 You can build the image yourself, or use the image built by me. 
 
