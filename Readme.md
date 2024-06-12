@@ -1,3 +1,7 @@
+# warning WIP
+
+this branch is a work in progress! i've removed the tag from dockerhub since the walktrough isn't complete (at all)
+
 # intro
 
 This container image builds bitcoin core with pull request for testnet4, cpuminer and (c-)lightning.
