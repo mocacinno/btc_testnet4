@@ -1,7 +1,7 @@
 version: '3'
 services:
   bitcoind:
-    image: mocacinno/btc_testnet4:lightning
+    image: mocacinno/btc_testnet4:cpuminer
     privileged: true
     container_name: bitcoind
     volumes:
