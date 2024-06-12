@@ -19,6 +19,7 @@ mkdir -p /root/project/run_btc_testnet4/lightning
 ```bash
 git clone https://github.com/mocacinno/btc_testnet4
 cd btc_testnet4
+git switch lightning
 #edit the docker-compose.yml file with your favorite editor, in the volume section, pick a local path that exists on your host... Maybe change the username and password aswell?
 docker-compose up -d
 #you can also run `docker-compose up` to run the container in the foreground, so you can see the debug.log
