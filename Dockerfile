@@ -4,8 +4,8 @@ RUN apt-get update && \
 RUN git clone https://github.com/ElementsProject/lightning /lightning
 WORKDIR /lightning
 RUN git fetch --all --tags
-RUN git checkout tags/v24.02.2 -b v24.02.2
-RUN sed -i '1311,1313d' /lightning/lightningd/chaintopology.c
+RUN git checkout tags/v24.05 -b v24.05
+RUN sed -i '1294,1296d' /lightning/lightningd/chaintopology.c
 RUN python3 -m venv ./grpc_tools
 ENV PATH="/lightning/grpc_tools/bin:$PATH"
 RUN pip install grpcio-tools mako
