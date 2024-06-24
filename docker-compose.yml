@@ -7,7 +7,9 @@ services:
     volumes:
       - /root/project/run_btc_testnet4/data:/root/.bitcoin/
       - /root/project/run_btc_testnet4/lightning:/root/.lightning
-    command: bash -c "bitcoind --testnet4 --server --rpcbind=0.0.0.0 --rpcuser=demo --rpcpassword=demo --rpcport=5000 --rpcallowip=53.38.0.0/16 --rpcallowip=172.0.0.0/8 --rpcallowip=127.0.0.1 --rpcallowip=10.8.0.0/16 && sleep 2m && lightningd --plugin-dir /opt/lightningd/plugins/ --bitcoin-datadir /root/.bitcoin/ --bitcoin-rpcuser demo --bitcoin-rpcpassword demo --bitcoin-rpcconnect bitcoind --bitcoin-rpcport 5000 --testnet"
+#    command: bash -c "bitcoind --testnet4 --server --rpcbind=0.0.0.0 --rpcuser=demo --rpcpassword=demo --rpcport=5000 --rpcallowip=53.38.0.0/16 --rpcallowip=172.0.0.0/8 --rpcallowip=127.0.0.1 --rpcallowip=10.8.0.0/16 && sleep 2m && lightningd --plugin-dir /opt/lightningd/plugins/ --bitcoin-datadir /root/.bitcoin/ --bitcoin-rpcuser demo --bitcoin-rpcpassword demo --bitcoin-rpcconnect bitcoind --bitcoin-rpcport 5000 --testnet"
+    command: bash -c "bitcoind --testnet4 --server --rpcuser=demo --rpcpassword=demo --rpcport=5000 --rpcallowip=127.0.0.1  && sleep 2m && lightningd --plugin-dir /opt/lightningd/plugins/ --bitcoin-datadir /root/.bitcoin/ --bitcoin-rpcuser demo --bitcoin-rpcpassword demo --bitcoin-rpcconnect bitcoind --bitcoin-rpcport 5000 --testnet"
+
     ports:
       - "8333:8333"
       - "48332:48332"
