@@ -21,6 +21,10 @@ git clone https://github.com/mocacinno/btc_testnet4
 cd btc_testnet4
 git switch bci_lightning
 #edit the docker-compose.yml file with your favorite editor, in the volume section, pick a local path that exists on your host... Maybe change the username and password aswell?
+#there's a 2 minute timeout in the docker-compose file because bitcoind needs to start, so the default timeout of 60 seconds just won't cut it
+export DOCKER_CLIENT_TIMEOUT=240
+export COMPOSE_HTTP_TIMEOUT=240
+
 docker-compose up -d
 #you can also run `docker-compose up` to run the container in the foreground, so you can see the debug.log
 ```
