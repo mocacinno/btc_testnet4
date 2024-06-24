@@ -17,6 +17,7 @@ services:
   cpuminer:
     image: mocacinno/btc_testnet4:bci_cpuminer
     container_name: cpuminer
+    privileged: true
     depends_on:
       - bitcoind
     command: cpuminer -a sha256d -o http://bitcoind:5000 -O demo:demo --coinbase-addr=tb1qumlhr8tn9gsdyujy464jkk4c5r488u8kxteyx5
