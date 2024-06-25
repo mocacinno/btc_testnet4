@@ -3,7 +3,7 @@ FROM registry.suse.com/bci/bci-base:15.6 AS builder
 COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 RUN /usr/local/bin/start.sh
-RUN zypper ref -s && zypper --non-interactive install git gcc13-c++ wget libevent-devel awk gcc-c++ && zypper --non-interactive install -t pattern devel_basis
+RUN zypper ref -s && zypper --non-interactive install git gcc13-c++ wget libevent-devel awk gcc-c++ libdb-4_8-devel && zypper --non-interactive install -t pattern devel_basis
 RUN wget https://archives.boost.io/release/1.85.0/source/boost_1_85_0.tar.gz
 RUN tar -xvf boost_1_85_0.tar.gz
 ENV BOOST_ROOT=/boost_1_85_0
@@ -13,7 +13,7 @@ RUN git clone https://github.com/bitcoin/bitcoin.git /bitcoin
 WORKDIR /bitcoin
 RUN git fetch origin pull/29775/head:pr-29775 && git checkout pr-29775
 RUN ./autogen.sh
-RUN ./configure --with-incompatible-bdb --with-gui=no CXX=g++-13
+RUN ./configure --with-incompatible-bdb --with-gui=no --enable-wallet CXX=g++-13
 RUN make -j "$(($(nproc) + 1))"
 WORKDIR /bitcoin/src
 RUN strip bitcoin-util && strip bitcoind && strip bitcoin-cli && strip bitcoin-tx
