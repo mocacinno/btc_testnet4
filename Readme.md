@@ -11,7 +11,6 @@ To use this image you'll need:
 
 ```bash
 mkdir -p /root/project/run_btc_testnet4/data
-mkdir -p /root/project/run_btc_testnet4/lightning
 ```
 
 ## How to deploy the container:
@@ -19,6 +18,7 @@ mkdir -p /root/project/run_btc_testnet4/lightning
 ```bash
 git clone https://github.com/mocacinno/btc_testnet4
 cd btc_testnet4
+git switch bci_cpuminer
 #edit the docker-compose.yml file with your favorite editor, in the volume section, pick a local path that exists on your host... Maybe change the username and password aswell?
 docker-compose up -d
 #you can also run `docker-compose up` to run the container in the foreground, so you can see the debug.log
@@ -34,61 +34,9 @@ bitcoin-cli -testnet4 -rpcuser=demo -rpcpassword=demo -rpcport=5000 getnewaddres
 
 ## How to mine
 
-The image also includes cpuminer... Eventough it's **not** a good idear to cpuminer... Somebody is already using an ASIC on the testnet4, so you'll have very little chance of solving a block cpu mining... But if you'd like to learn, here's how you'd cpu mine
+This is a cpumining branch... docker-compose.yml uses two containers: the node container, starting up with the necessary parameters to actually listen to cpuminer (you might have to tweak docker-compose's allow ip's with the ones in your own environment), it starts a second container (cpuminer) to automatically start mining.
 
-```bash
-docker exec -it bitcoind /bin/bash
-#change my address by yours offcourse
-cpuminer -a sha256d -o http://127.0.0.1:5000 -O demo:demo --coinbase-addr=tb1qumlhr8tn9gsdyujy464jkk4c5r488u8kxteyx5
-```
-
-## how to use (c-)lightning
-
-Bitcoind will automatically start, lightningd won't... Start it manually (for the time being)
-
-first log on to the container
-
-```bash
-docker exec -it bitcoind /bin/bash
-```
-
-Then start the lightning node
-
-```bash
-#start the lightning daemon
-lightningd --plugin-dir /opt/lightningd/plugins/ --bitcoin-datadir /root/.bitcoin/testnet4 --bitcoin-rpcuser demo --bitcoin-rpcpassword demo --bitcoin-rpcconnect 127.0.0.1 --bitcoin-rpcport 5000 --testnet --log-file=/tmp/lightning.log --daemon
-#ask for help
-lightning-cli --testnet help
-#get lightning node info
-lightning-cli --testnet getinfo
-```
-
-Then create an address, fund it, connect to an existing lightning node on testnet4, create a channel, create a lightning invoice and pay up :)
-
-```bash
-#create a new address
-lightning-cli --testnet newaddr
-#FUND this address, tx needs 6 confirms to show up!!!
-#check funds
-lightning-cli --testnet listfunds
-#connect to a second lightning node on testnet4
-lightning-cli --testnet connect 02dcee61e0aecb430296c5129bc2f07e5ccf791ac408389443d30333e6eaba52c9@54.38.124.151
-#create (and fund) the channel
-lightning-cli --testnet fundchannel 02dcee61e0aecb430296c5129bc2f07e5ccf791ac408389443d30333e6eaba52c9 200000 urgent true 1
-```
-
-Now, the side without funds on his side of the channel creates an invoice
-
-```bash
-lightning-cli --testnet invoice 5000 pay500 demo 3600
-#copy the bolt11 value
-```
-
-now use the copy'd bolt11 value on the other side to pay the invoice
-
-```bash
-lightning-cli --testnet pay lntb50n1pn9p9npsp5zf6tyfhcthxry9e3ueax4ccwgwj459ypvuuut65pckwt0wx0k6eqpp5hkzd9x2wy69pznyrlfck3ey7g96canuflr7lqq2ru5guy3xhe7uqdq8v3jk6mccqp29qxpqysgq2zz9ac35rh6rla8tdl627jwpfaltl39qufrg5eewpw9flldcl8kjum30r9g3zj6ltd23qa85ccanzup367vm5l0qq2szpff2fs5xndgqa0674s
-```
+**it is a BAD idear to cpu mine!!! even on testnet, you'll have a very small chance of hitting a block without an ASIC!!!**
 
 ## buy me a coffee
 
