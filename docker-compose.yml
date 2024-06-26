@@ -14,11 +14,12 @@ services:
     networks:
       - my_network
 
-  cpuminer:
-    image: mocacinno/btc_testnet4:bci_cpuminer
-    container_name: cpuminer
-    privileged: true
-    command: cpuminer-x64 -a sha256d -o http://bitcoind:5000 -O demo:demo --coinbase-addr=tb1qumlhr8tn9gsdyujy464jkk4c5r488u8kxteyx5 
+  ckpool:
+    image: mocacinno/btc_testnet4:bci_ckpool
+    container_name: ckpool
+    ports:
+      - "3334:3334"
+    command: ckpool -B
     networks:
       - my_network
 
