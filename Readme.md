@@ -18,7 +18,7 @@ mkdir -p /root/project/run_btc_testnet4/data
 ```bash
 git clone https://github.com/mocacinno/btc_testnet4
 cd btc_testnet4
-git switch bci_cpuminer
+git switch bci_ckpool
 #edit the docker-compose.yml file with your favorite editor, in the volume section, pick a local path that exists on your host... Maybe change the username and password aswell?
 docker-compose up -d
 #you can also run `docker-compose up` to run the container in the foreground, so you can see the debug.log
@@ -32,11 +32,9 @@ bitcoin-cli -testnet4 -rpcuser=demo -rpcpassword=demo -rpcport=5000 createwallet
 bitcoin-cli -testnet4 -rpcuser=demo -rpcpassword=demo -rpcport=5000 getnewaddress
 ```
 
-## How to mine
+## How to run a node
 
-This is a cpumining branch... docker-compose.yml uses two containers: the node container, starting up with the necessary parameters to actually listen to cpuminer (you might have to tweak docker-compose's allow ip's with the ones in your own environment), it starts a second container (cpuminer) to automatically start mining.
-
-**it is a BAD idear to cpu mine!!! even on testnet, you'll have a very small chance of hitting a block without an ASIC!!!**
+This is the ckpool branch... A node should automagically start just for you. Two containers will be started: a bitcoind node and a ckpool node. If you want to use your own ckpool.conf file, make sure you adapt the docker-compose.yml file to overwrite the ckpool.conf that's hardcoded (the one that's hardcoded has a 0.0% donation, but my own tBTC4 address is still included).
 
 ## buy me a coffee
 
