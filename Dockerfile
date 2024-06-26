@@ -8,10 +8,19 @@ RUN git clone https://github.com/JayDDee/cpuminer-opt /cpuminer
 WORKDIR /cpuminer
 RUN git fetch --all --tags
 RUN git checkout tags/v24.3 -b v24.3
-RUN ./build.sh
+RUN ./build-allarch.sh
 
 FROM registry.suse.com/bci/bci-minimal:15.6
 COPY --from=builder /cpuminer/cpuminer /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-aes-sse42 /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-avx /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-avx2 /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-avx2-sha /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-avx512 /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-sse2 /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-sse42 /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-ssse3 /usr/local/bin
+COPY --from=builder /cpuminer/cpuminer-x64 /usr/local/bin
 COPY --from=builder /usr/lib64/libcurl.so.4 /usr/lib64/libcurl.so.4
 COPY --from=builder /usr/lib64/libnghttp2.so.14 /usr/lib64/libnghttp2.so.14
 COPY --from=builder /usr/lib64/libidn2.so.0 /usr/lib64/libidn2.so.0
