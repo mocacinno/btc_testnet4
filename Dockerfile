@@ -3,43 +3,15 @@ FROM registry.suse.com/bci/bci-base:15.6 AS builder
 COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
 RUN /usr/local/bin/start.sh
-RUN zypper ref -s && zypper --non-interactive install git awk libcurl-devel gcc-c++ gmp-devel && zypper --non-interactive install -t pattern devel_basis
-RUN git clone https://github.com/JayDDee/cpuminer-opt /cpuminer
-WORKDIR /cpuminer
-RUN git fetch --all --tags
-RUN git checkout tags/v24.3 -b v24.3
-RUN ./build-allarch.sh
+RUN zypper ref -s && zypper --non-interactive install git wget awk gcc13-c++ && zypper --non-interactive install -t pattern devel_basis
+RUN wget https://download.opensuse.org/repositories/devel:/tools:/building/15.6/noarch/autoconf-2.72-80.d_t_b.1.noarch.rpm
+#rpm --import http://example.com/path/to/keyfile
+RUN zypper --non-interactive --no-gpg-checks install autoconf-2.72-80.d_t_b.1.noarch.rpm
+RUN git clone https://bitbucket.org/ckolivas/ckpool.git /ckpool
+WORKDIR /ckpool
+#RUN git fetch --all --tags
+RUN ./autogen.sh && CC=gcc-13 CXX=g++-13 CXXFLAGS="-std=c++17" ./configure && make -j "$(($(nproc) + 1))"
 
 FROM registry.suse.com/bci/bci-minimal:15.6
-COPY --from=builder /cpuminer/cpuminer /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-aes-sse42 /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-avx /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-avx2 /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-avx2-sha /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-avx512 /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-sse2 /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-sse42 /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-ssse3 /usr/local/bin
-COPY --from=builder /cpuminer/cpuminer-x64 /usr/local/bin
-COPY --from=builder /usr/lib64/libcurl.so.4 /usr/lib64/libcurl.so.4
-COPY --from=builder /usr/lib64/libnghttp2.so.14 /usr/lib64/libnghttp2.so.14
-COPY --from=builder /usr/lib64/libidn2.so.0 /usr/lib64/libidn2.so.0
-COPY --from=builder /usr/lib64/libssh.so.4 /usr/lib64/libssh.so.4
-COPY --from=builder /usr/lib64/libpsl.so.5 /usr/lib64/libpsl.so.5 
-COPY --from=builder /usr/lib64/libssl.so.3 /usr/lib64/libssl.so.3  
-COPY --from=builder /usr/lib64/libcrypto.so.3 /usr/lib64/libcrypto.so.3
-COPY --from=builder /usr/lib64/libgssapi_krb5.so.2 /usr/lib64/libgssapi_krb5.so.2
-COPY --from=builder /usr/lib64/libldap_r-2.4.so.2 /usr/lib64/libldap_r-2.4.so.2
-COPY --from=builder /usr/lib64/liblber-2.4.so.2 /usr/lib64/liblber-2.4.so.2
-COPY --from=builder /usr/lib64/libzstd.so.1 /usr/lib64/libzstd.so.1
-COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/libbrotlidec.so.1
-COPY --from=builder /usr/lib64/libunistring.so.2 /usr/lib64/libunistring.so.2
-COPY --from=builder /usr/lib64/libkrb5.so.3 /usr/lib64/libkrb5.so.3
-COPY --from=builder /usr/lib64/libk5crypto.so.3 /usr/lib64/libk5crypto.so.3
-COPY --from=builder /lib64/libcom_err.so.2 /lib64/libcom_err.so.2
-COPY --from=builder /usr/lib64/libkrb5support.so.0 /usr/lib64/libkrb5support.so.0
-COPY --from=builder /usr/lib64/libsasl2.so.3 /usr/lib64/libsasl2.so.3
-COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/libbrotlicommon.so.1
-COPY --from=builder /usr/lib64/libkeyutils.so.1 /usr/lib64/libkeyutils.so.1
-COPY --from=builder /lib64/libresolv.so.2 /lib64/libresolv.so.2
-COPY --from=builder /usr/lib64/libselinux.so.1 /usr/lib64/libselinux.so.1
+COPY --from=builder /ckpool/src/ckpool /usr/local/bin
+COPY ckpool.conf /ckpool.conf
