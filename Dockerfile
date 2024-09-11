@@ -8,7 +8,7 @@ RUN wget https://archives.boost.io/release/1.85.0/source/boost_1_85_0.tar.gz
 RUN tar -xvf boost_1_85_0.tar.gz
 ENV BOOST_ROOT=/boost_1_85_0
 WORKDIR /boost_1_85_0
-RUN chmod +x bootstrap.sh && ./bootstrap.sh && ./b2 || ./b2 headers
+RUN chmod +x bootstrap.sh && ./bootstrap.sh && ./b2 -j"$(($(nproc) + 1))" || ./b2 -j"$(($(nproc) + 1))" headers
 RUN git clone https://github.com/bitcoin/bitcoin.git /bitcoin
 WORKDIR /bitcoin
 RUN git fetch origin pull/29775/head:pr-29775 && git checkout pr-29775
